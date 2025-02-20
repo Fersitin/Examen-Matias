@@ -1,15 +1,19 @@
-name: CI
+name: Docker
 
 on:
   push:
-    branches: [ main ]
-  pull_request:
-    branches: [ main ]
+    branches: [ "main" ]
 
 jobs:
   build:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v3
-    - name: Run a one-line script
-      run: echo Hello, world!
+    - name: Build the Docker image
+      run: docker build . --file Dockerfile --tag myapp:$(date +%s)
+    - name: Log in to Docker Hub
+      run: echo "${{ secrets.C0unt3r_2808 }}" | docker login -u "${{ secrets.ferrnandoo }}" --password-stdin
+    - name: Push image to Docker Hub
+      run: |
+        docker tag myapp:$(date +%s) ${{ secrets.ferrnandoo }}/myapp:latest
+        docker push ${{ secrets.ferrnandoo }}/myapp:latest
